@@ -1,0 +1,36 @@
+{
+  "name": "cruxtor",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop cruxtor",
+    "pm2:restart": "pm2 restart cruxtor",
+    "pm2:delete": "pm2 delete cruxtor",
+    "pm2:logs": "pm2 logs cruxtor"
+  },
+  "dependencies": {
+    "next": "14.2.5",
+    "nodemailer": "^6.9.8",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/nodemailer": "^6.4.14",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "typescript": "^5",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.5"
+  }
+}
+
+
+
