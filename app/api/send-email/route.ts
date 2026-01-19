@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-// import nodemailer from 'nodemailer' // Disabled for now
+import nodemailer from 'nodemailer'
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,24 +23,42 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Email sending disabled for now
-    // TODO: Uncomment nodemailer import and code below to enable email sending
-    /*
-    // Create transporter
+    // Create transporter for email
+    const smtpUser = process.env.SMTP_USER 
+    const smtpPass = process.env.SMTP_PASSWORD 
+    
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: false, // true for 465, false for other ports
+      host: process.env.SMTP_HOST , 
+      port: parseInt(process.env.SMTP_PORT||'0'
+      ),
+      secure: true, 
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD,
+        user: smtpUser,
+        pass: smtpPass,
       },
+      tls: {
+        // Do not fail on invalid certificates
+        rejectUnauthorized: false,
+      },
+      // Add connection timeout
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
     })
+
+    // Verify connection before sending
+    try {
+      await transporter.verify()
+      console.log('SMTP server connection verified successfully')
+    } catch (verifyError: any) {
+      console.error('SMTP verification failed:',JSON.stringify(verifyError));
+      throw new Error(`SMTP connection failed: ${verifyError.message || 'Authentication error. Please check your email credentials.'}`)
+    }
 
     // Email content
     const mailOptions = {
-      from: process.env.SMTP_USER,
-      to: process.env.COMPANY_EMAIL || 'Info@cruxtor.com',
+      from: process.env.SMTP_USER || 'info@cruxtor.com',
+      to: process.env.COMPANY_EMAIL || 'info@cruxto.com',
       replyTo: email,
       subject: `Contact Form Submission from ${name}`,
       html: `
@@ -55,22 +73,31 @@ export async function POST(request: NextRequest) {
 
     // Send email
     const info = await transporter.sendMail(mailOptions)
-    */
-
-    // For now, just log and return success
-    console.log('Contact form submission (email disabled):', { name, email, mobile, message })
+    console.log('Email sent successfully:', info.messageId)
 
     return NextResponse.json(
       { 
         success: true, 
-        message: 'Form submitted successfully (email disabled)',
+        message: 'Form submitted successfully. We will get back to you soon.',
       },
       { status: 200 }
     )
   } catch (error: any) {
     console.error('Error processing form:', error)
+    
+    // Provide more specific error messages
+    let errorMessage = 'Failed to send email. Please try again later.'
+    if (error.code === 'EAUTH') {
+      errorMessage = 'Email authentication failed. Please check the email server configuration.'
+    } else if (error.message) {
+      errorMessage = error.message
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to process form', details: error.message },
+      { 
+        error: errorMessage,
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      },
       { status: 500 }
     )
   }

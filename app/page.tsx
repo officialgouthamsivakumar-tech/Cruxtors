@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import NextImage from 'next/image'
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
 import Header from './components/Header'
 import { COMPANY_EMAIL, COMPANY_ADDRESS } from './config/constants'
 import './globals.css'
@@ -14,6 +16,8 @@ export default function Home() {
     message: ''
   })
   const [subscribeEmail, setSubscribeEmail] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [isSubscribing, setIsSubscribing] = useState(false)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -59,9 +63,7 @@ export default function Home() {
     }
 
 
-    // Email sending disabled for now
-    // TODO: Enable email sending by uncommenting the code below
-    /*
+    setIsLoading(true)
     try {
       // Send email via API
       const response = await fetch('/api/send-email', {
@@ -74,35 +76,18 @@ export default function Home() {
 
       const data = await response.json()
 
-      if (response.ok) {
+      if (response.ok && data.success) {
         alert('Thank you for your inquiry! We will get back to you soon.')
         setFormData({ name: '', email: '', mobile: '', message: '' })
       } else {
-        alert(data.error || 'There was an error sending your message. Please try again.')
+        alert(data.error || data.message || 'There was an error sending your message. Please try again.')
       }
     } catch (error) {
       console.error('Error submitting form:', error)
       alert('There was an error sending your message. Please try again.')
+    } finally {
+      setIsLoading(false)
     }
-    */
-    
-    // Open email client with mailto link
-    const subject = encodeURIComponent(`Contact Form Submission from ${sanitizedData.name}`)
-    const body = encodeURIComponent(
-      `Name: ${sanitizedData.name}\n` +
-      `Email: ${sanitizedData.email}\n` +
-      `Mobile: ${sanitizedData.mobile || 'Not provided'}\n\n` +
-      `Message:\n${sanitizedData.message}`
-    )
-    const mailtoLink = `mailto:${COMPANY_EMAIL}?subject=${subject}&body=${body}`
-    
-    // Open email client
-    window.location.href = mailtoLink
-    
-    // Reset form after a short delay
-    setTimeout(() => {
-      setFormData({ name: '', email: '', mobile: '', message: '' })
-    }, 100)
   }
 
   const handleSubscribe = async (e: React.FormEvent) => {
@@ -121,9 +106,7 @@ export default function Home() {
       return
     }
 
-    // Email sending disabled for now
-    // TODO: Enable email sending by uncommenting the code below
-    /*
+    setIsSubscribing(true)
     try {
       // Send subscription via API
       const response = await fetch('/api/subscribe', {
@@ -136,22 +119,18 @@ export default function Home() {
 
       const data = await response.json()
 
-      if (response.ok) {
+      if (response.ok && data.success) {
         alert('Thank you for subscribing!')
         setSubscribeEmail('')
       } else {
-        alert(data.error || 'There was an error processing your subscription. Please try again.')
+        alert(data.error || data.message || 'There was an error processing your subscription. Please try again.')
       }
     } catch (error) {
       console.error('Error subscribing:', error)
       alert('There was an error processing your subscription. Please try again.')
+    } finally {
+      setIsSubscribing(false)
     }
-    */
-    
-    // For now, just show success message without sending email
-    console.log('Subscribe (email disabled):', sanitizedEmail)
-    alert('Thank you for subscribing!')
-    setSubscribeEmail('')
   }
 
   return (
@@ -804,12 +783,13 @@ export default function Home() {
               
               <div className="form-group">
                 <label htmlFor="mobile">Mobile number</label>
-                <input
-                  type="tel"
-                  id="mobile"
-                  name="mobile"
+                <PhoneInput
+                  international
+                  defaultCountry="IN"
                   value={formData.mobile}
-                  onChange={handleInputChange}
+                  onChange={(value) => setFormData(prev => ({ ...prev, mobile: value || '' }))}
+                  id="mobile"
+                  className="phone-input"
                 />
               </div>
               
@@ -823,7 +803,35 @@ export default function Home() {
                 />
               </div>
               
-              <button type="submit" className="btn btn-submit">Send</button>
+              <button 
+                type="submit" 
+                className="btn btn-submit" 
+                disabled={isLoading}
+                style={{ 
+                  opacity: isLoading ? 0.7 : 1, 
+                  cursor: isLoading ? 'not-allowed' : 'pointer',
+                  position: 'relative'
+                }}
+              >
+                {isLoading ? (
+                  <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                    <span 
+                      style={{
+                        width: '16px',
+                        height: '16px',
+                        border: '2px solid #ffffff',
+                        borderTop: '2px solid transparent',
+                        borderRadius: '50%',
+                        animation: 'spin 0.8s linear infinite',
+                        display: 'inline-block'
+                      }}
+                    />
+                    Sending...
+                  </span>
+                ) : (
+                  'Send'
+                )}
+              </button>
             </form>
             
             <div className="contact-info">
@@ -901,7 +909,34 @@ export default function Home() {
               onChange={(e) => setSubscribeEmail(e.target.value)}
               required
             />
-            <button type="submit">Sign up</button>
+            <button 
+              type="submit"
+              disabled={isSubscribing}
+              style={{ 
+                opacity: isSubscribing ? 0.7 : 1, 
+                cursor: isSubscribing ? 'not-allowed' : 'pointer',
+                position: 'relative'
+              }}
+            >
+              {isSubscribing ? (
+                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <span 
+                    style={{
+                      width: '16px',
+                      height: '16px',
+                      border: '2px solid #ffffff',
+                      borderTop: '2px solid transparent',
+                      borderRadius: '50%',
+                      animation: 'spin 0.8s linear infinite',
+                      display: 'inline-block'
+                    }}
+                  />
+                  Subscribing...
+                </span>
+              ) : (
+                'Sign up'
+              )}
+            </button>
           </form>
         </div>
       </section>

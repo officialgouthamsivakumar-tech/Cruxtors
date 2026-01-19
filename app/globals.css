@@ -108,6 +108,15 @@ code {
   }
 }
 
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .nav-menu {
   display: flex;
   list-style: none;
@@ -819,6 +828,51 @@ code {
   border-radius: 5px;
   font-size: 1rem;
   font-family: inherit;
+}
+
+/* Phone Input Styling */
+.phone-input {
+  width: 100%;
+}
+
+.phone-input .PhoneInputInput {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+}
+
+.phone-input .PhoneInputInput:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+.phone-input .PhoneInputCountry {
+  margin-right: 0.5rem;
+}
+
+.phone-input .PhoneInputCountryIcon {
+  width: 1.5em;
+  height: 1.5em;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.phone-input .PhoneInputCountrySelect {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-family: inherit;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.phone-input .PhoneInputCountrySelect:focus {
+  border-color: #667eea;
+  outline: none;
 }
 
 .form-group textarea {
