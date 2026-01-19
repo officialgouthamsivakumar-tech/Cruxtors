@@ -24,13 +24,42 @@ export async function POST(request: NextRequest) {
     }
 
     // Create transporter for email
-    const smtpUser = process.env.SMTP_USER 
-    const smtpPass = process.env.SMTP_PASSWORD 
+    const smtpHost = process.env.SMTP_HOST
+    const smtpPort = process.env.SMTP_PORT
+    const smtpUser = process.env.SMTP_USER
+    const smtpPass = process.env.SMTP_PASSWORD
+    
+    // Debug: Log environment variables (without password)
+    console.log('SMTP Configuration Check:', {
+      hasHost: !!smtpHost,
+      host: smtpHost,
+      hasPort: !!smtpPort,
+      port: smtpPort,
+      hasUser: !!smtpUser,
+      user: smtpUser,
+      hasPass: !!smtpPass,
+    })
+    
+    // Validate required environment variables
+    if (!smtpHost || !smtpPort || !smtpUser || !smtpPass) {
+      console.error('Missing SMTP configuration:', {
+        hasHost: !!smtpHost,
+        hasPort: !!smtpPort,
+        hasUser: !!smtpUser,
+        hasPass: !!smtpPass,
+      })
+      return NextResponse.json(
+        { 
+          error: 'Email server configuration is missing. Please check your environment variables.',
+          details: process.env.NODE_ENV === 'development' ? 'SMTP_HOST, SMTP_PORT, SMTP_USER, and SMTP_PASSWORD must be set. Make sure to restart your Next.js server after updating .env file.' : undefined
+        },
+        { status: 500 }
+      )
+    }
     
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST , 
-      port: parseInt(process.env.SMTP_PORT||'0'
-      ),
+      host: smtpHost,
+      port: parseInt(smtpPort),
       secure: true, 
       auth: {
         user: smtpUser,
