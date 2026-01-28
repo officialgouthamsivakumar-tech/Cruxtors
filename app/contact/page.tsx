@@ -4,7 +4,7 @@ import { useState } from 'react'
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 import Header from '../components/Header'
-import { COMPANY_EMAIL, COMPANY_ADDRESS } from '../config/constants'
+import { COMPANY_EMAIL, COMPANY_ADDRESS, COMPANY_PHONE, COMPANY_NAME } from '../config/constants'
 import '../globals.css'
 
 export default function ContactPage() {
@@ -133,6 +133,7 @@ export default function ContactPage() {
                   onChange={(value) => setFormData(prev => ({ ...prev, mobile: value || '' }))}
                   id="mobile"
                   className="phone-input"
+                  countrySelectProps={{ unicodeFlags: true }}
                 />
               </div>
               
@@ -186,9 +187,10 @@ export default function ContactPage() {
               </div>
               
               <div className="info-box">
-                <h3>Cruxtor</h3>
+                <h3>{COMPANY_NAME}</h3>
                 <p>{COMPANY_ADDRESS}</p>
-                <p>{COMPANY_EMAIL}</p>
+                <p>📞 {COMPANY_PHONE}</p>
+                <p>📧 {COMPANY_EMAIL}</p>
               </div>
               
               <div className="info-box">

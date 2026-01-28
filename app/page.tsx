@@ -5,7 +5,7 @@ import NextImage from 'next/image'
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 import Header from './components/Header'
-import { COMPANY_EMAIL, COMPANY_ADDRESS } from './config/constants'
+import { COMPANY_EMAIL, COMPANY_ADDRESS, COMPANY_PHONE, COMPANY_NAME } from './config/constants'
 import './globals.css'
 
 export default function Home() {
@@ -790,6 +790,7 @@ export default function Home() {
                   onChange={(value) => setFormData(prev => ({ ...prev, mobile: value || '' }))}
                   id="mobile"
                   className="phone-input"
+                  countrySelectProps={{ unicodeFlags: true }}
                 />
               </div>
               
@@ -843,9 +844,10 @@ export default function Home() {
               </div>
               
               <div className="info-box">
-                <h3>Cruxtor</h3>
+                <h3>{COMPANY_NAME}</h3>
                 <p>{COMPANY_ADDRESS}</p>
-                <p>{COMPANY_EMAIL}</p>
+                <p>📞 {COMPANY_PHONE}</p>
+                <p>📧 {COMPANY_EMAIL}</p>
               </div>
               
               <div className="info-box">
@@ -949,9 +951,10 @@ export default function Home() {
               <h3>Blog</h3>
             </div>
             <div className="footer-section">
-              <h3>Cruxtor</h3>
+              <h3>{COMPANY_NAME}</h3>
               <p>{COMPANY_ADDRESS}</p>
-              <p>{COMPANY_EMAIL}</p>
+              <p>📞 {COMPANY_PHONE}</p>
+              <p>📧 {COMPANY_EMAIL}</p>
             </div>
           </div>
           <div className="footer-bottom">
